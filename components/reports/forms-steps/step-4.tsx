@@ -1,18 +1,24 @@
-"use client";
+'use client';
 
-import { FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { ReportSchema } from "@/schemas";
-import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
+} from '@/components/ui/select';
+import { distOptions } from '@/lib/static-data';
+import { ReportSchema } from '@/schemas';
+import { UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
 
 type StepfourProps = {
   form: UseFormReturn<z.infer<typeof ReportSchema>>;
@@ -35,8 +41,18 @@ const StepFour = ({ form }: StepfourProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="0.0" {...field} />
+                  <Input
+                    placeholder="0.0"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -54,11 +70,15 @@ const StepFour = ({ form }: StepfourProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt: string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -68,8 +88,18 @@ const StepFour = ({ form }: StepfourProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

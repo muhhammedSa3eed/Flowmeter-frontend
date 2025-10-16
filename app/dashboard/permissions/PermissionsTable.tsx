@@ -795,7 +795,7 @@ function PermissionsTableInner<TData, TValue>({
       {applied ? (
         <>
           {/* Table: show on large screens and up (lg+). On smaller screens rows are shown as cards */}
-          <div className="hidden lg:block bg-background overflow-x-auto rounded-md border">
+          <div className="hidden lg:block bg-background overflow-x-auto rounded-md border text-center">
             <Table>
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -805,7 +805,7 @@ function PermissionsTableInner<TData, TValue>({
                       return (
                         <TableHead
                           key={header.id}
-                          className={`whitespace-nowrap font-semibold text-black dark:text-white ${
+                          className={`whitespace-nowrap font-semibold text-black dark:text-white text-center ${
                             !isLast ? "border-r" : ""
                           } ${
                             header.id === "actions" ? "sticky -right-[1px]" : ""

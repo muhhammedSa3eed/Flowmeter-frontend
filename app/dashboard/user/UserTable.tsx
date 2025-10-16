@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
-import { useState, useEffect, useId, useRef, useLayoutEffect } from 'react';
+"use client";
+import { useState, useEffect, useId, useRef, useLayoutEffect } from "react";
 import {
   ColumnFiltersState,
   SortingState,
@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
   FilterFn,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -21,16 +21,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
-import { Button } from '@/components/ui/button';
-import { DialogTitle } from '@/components/ui/dialog';
+import { Button } from "@/components/ui/button";
+import { DialogTitle } from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerTrigger,
   DrawerFooter,
-} from '@/components/ui/drawer';
+} from "@/components/ui/drawer";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -41,23 +41,23 @@ import {
   X,
   Save,
   CirclePlus,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   DndContext,
   closestCenter,
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
   useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-import { RankingInfo, rankItem } from '@tanstack/match-sorter-utils';
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 
 import {
   Select,
@@ -65,11 +65,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
-import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
@@ -77,17 +77,17 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { Checkbox } from '@/components/ui/checkbox';
-import toast from 'react-hot-toast';
-import AddUser from '@/components/CRUD/Users/AddUser';
-import Cookies from 'js-cookie';
+} from "@/components/ui/sheet";
+import { Checkbox } from "@/components/ui/checkbox";
+import toast from "react-hot-toast";
+import AddUser from "@/components/CRUD/Users/AddUser";
+import Cookies from "js-cookie";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
-} from '@/components/ui/pagination';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/pagination";
+import { Label } from "@/components/ui/label";
 
 interface DataTableProps<TData, TValue> {
   columns: any;
@@ -96,7 +96,7 @@ interface DataTableProps<TData, TValue> {
   token: string;
 }
 
-declare module '@tanstack/table-core' {
+declare module "@tanstack/table-core" {
   interface FilterFns {
     fuzzy: FilterFn<unknown>;
   }
@@ -117,7 +117,7 @@ export default function UserTable<TData, TValue>({
   preferences,
   token,
 }: DataTableProps<TData, TValue>) {
-  const tableName = 'Users';
+  const tableName = "Users";
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     preferences || {}
@@ -129,16 +129,17 @@ export default function UserTable<TData, TValue>({
     // preferences may include an order array
     (preferences && (preferences.order as string[])) || []
   );
-  const [prefsLoaded, setPrefsLoaded] = useState(false);
+  // mark preferences as loaded if preferences were passed in as a prop
+  const [prefsLoaded, setPrefsLoaded] = useState<boolean>(Boolean(preferences));
 
   useEffect(() => {
     const fetchPreferences = async () => {
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/get/preferences/${tableName}`,
-          { method: 'GET', credentials: 'include' }
+          { method: "GET", credentials: "include" }
         );
-        if (!res.ok) throw new Error('Failed to fetch preferences');
+        if (!res.ok) throw new Error("Failed to fetch preferences");
         const json = await res.json();
         if (json.preferences) {
           // json.preferences might be a visibility object or an object containing visibility + order
@@ -153,7 +154,7 @@ export default function UserTable<TData, TValue>({
           if (prefs.order) {
             // ensure sheet order excludes select and actions
             const filtered = (prefs.order as string[]).filter(
-              (id) => id !== 'select' && id !== 'actions'
+              (id) => id !== "select" && id !== "actions"
             );
             setTempColumnOrder(filtered);
           }
@@ -161,9 +162,14 @@ export default function UserTable<TData, TValue>({
             setSorting(prefs.sorting as SortingState);
           }
           setPrefsLoaded(true);
+          return;
         }
+        // If server returned successfully but no preferences object, still mark prefs loaded
+        setPrefsLoaded(true);
       } catch (error) {
-        console.error(' Error loading preferences:', error);
+        console.error(" Error loading preferences:", error);
+        // avoid blocking the UI when preferences endpoint fails or returns nothing
+        setPrefsLoaded(true);
       }
     };
     fetchPreferences();
@@ -229,7 +235,7 @@ export default function UserTable<TData, TValue>({
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
-      touchAction: 'none',
+      touchAction: "none",
     } as React.CSSProperties;
 
     return (
@@ -261,7 +267,7 @@ export default function UserTable<TData, TValue>({
       const ids = table
         .getAllColumns()
         .map((c) => c.id)
-        .filter((id) => id !== 'select' && id !== 'actions');
+        .filter((id) => id !== "select" && id !== "actions");
       if (!tempColumnOrder || tempColumnOrder.length === 0) {
         setTempColumnOrder(ids);
       } else {
@@ -297,10 +303,10 @@ export default function UserTable<TData, TValue>({
     try {
       const existing = table.getAllColumns().map((c) => c.id);
       let orderToApply = tempColumnOrder.filter((id) => existing.includes(id));
-      if (existing.includes('select')) {
+      if (existing.includes("select")) {
         orderToApply = [
-          'select',
-          ...orderToApply.filter((id) => id !== 'select'),
+          "select",
+          ...orderToApply.filter((id) => id !== "select"),
         ];
       }
       if (orderToApply.length) table.setColumnOrder(orderToApply);
@@ -322,20 +328,20 @@ export default function UserTable<TData, TValue>({
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/groups`,
           {
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: token ? `Bearer ${token}` : '',
+              "Content-Type": "application/json",
+              Authorization: token ? `Bearer ${token}` : "",
             },
-            credentials: 'include',
+            credentials: "include",
           }
         );
         const data: any[] = await res.json();
         setGroups(data);
       } catch (error) {
-        console.error('Failed to fetch groups', error);
+        console.error("Failed to fetch groups", error);
       }
     };
     fetchGroups();
-  }, []);
+  }, [token]);
 
   // Show a skeleton while preferences or data are still loading (match RfpTable behavior)
   if (!prefsLoaded || !dataLoaded) {
@@ -360,7 +366,7 @@ export default function UserTable<TData, TValue>({
             placeholder="Search all columns..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className={cn('peer min-w-auto ps-9')}
+            className={cn("peer min-w-auto ps-9")}
           />
 
           {/* Toggle columns visibility: Sheet on sm+ screens, Drawer on xs */}
@@ -396,10 +402,10 @@ export default function UserTable<TData, TValue>({
                   <Button
                     size="custom"
                     className={cn(
-                      'flex-1 p-2',
+                      "flex-1 p-2",
                       Object.values(tempColumnVisibility).every(Boolean)
-                        ? 'bg-green-500 text-white hover:bg-green-600'
-                        : 'border-green-500 hover:bg-gray-500'
+                        ? "bg-green-500 text-white hover:bg-green-600"
+                        : "border-green-500 hover:bg-gray-500"
                     )}
                     onClick={() => {
                       const allVisible =
@@ -416,8 +422,8 @@ export default function UserTable<TData, TValue>({
                     }}
                   >
                     {Object.values(tempColumnVisibility).every(Boolean)
-                      ? 'Deselect All'
-                      : 'Select All'}
+                      ? "Deselect All"
+                      : "Select All"}
                   </Button>
                   <Button
                     variant="outline"
@@ -428,9 +434,9 @@ export default function UserTable<TData, TValue>({
                       const ids = table
                         .getAllColumns()
                         .map((c) => c.id)
-                        .filter((id) => id !== 'select' && id !== 'actions');
+                        .filter((id) => id !== "select" && id !== "actions");
                       setTempColumnOrder(ids);
-                      toast('✅ Order reset Successfully');
+                      toast("✅ Order reset Successfully");
                     }}
                   >
                     Reset
@@ -471,7 +477,7 @@ export default function UserTable<TData, TValue>({
                             .getAllColumns()
                             .map((c) => c.id)
                             .filter(
-                              (id) => id !== 'select' && id !== 'actions'
+                              (id) => id !== "select" && id !== "actions"
                             );
                           let order =
                             tempColumnOrder && tempColumnOrder.length
@@ -482,7 +488,7 @@ export default function UserTable<TData, TValue>({
                           );
                           if (missing.length) order = [...order, ...missing];
                           const finalOrder = order.filter(
-                            (id) => id !== 'select' && id !== 'actions'
+                            (id) => id !== "select" && id !== "actions"
                           );
                           return finalOrder.map((colId) => {
                             const column = table
@@ -491,7 +497,7 @@ export default function UserTable<TData, TValue>({
                             if (!column) return null;
                             const canHide = column.getCanHide();
                             const header =
-                              typeof column.columnDef.header === 'string'
+                              typeof column.columnDef.header === "string"
                                 ? column.columnDef.header
                                 : column.id;
 
@@ -554,10 +560,10 @@ export default function UserTable<TData, TValue>({
                         let orderToApply = tempColumnOrder.filter((id) =>
                           existing.includes(id)
                         );
-                        if (existing.includes('select')) {
+                        if (existing.includes("select")) {
                           orderToApply = [
-                            'select',
-                            ...orderToApply.filter((id) => id !== 'select'),
+                            "select",
+                            ...orderToApply.filter((id) => id !== "select"),
                           ];
                         }
                         if (orderToApply.length)
@@ -578,23 +584,23 @@ export default function UserTable<TData, TValue>({
                       const res = await fetch(
                         `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/preferences`,
                         {
-                          method: 'POST',
+                          method: "POST",
                           headers: {
-                            'Content-Type': 'application/json',
+                            "Content-Type": "application/json",
                           },
-                          credentials: 'include',
+                          credentials: "include",
                           body: JSON.stringify(payload),
                         }
                       );
 
                       if (!res.ok) {
-                        toast.error(' Failed to save preferences');
+                        toast.error(" Failed to save preferences");
                         return;
                       }
 
-                      toast.success(' Preferences saved!');
+                      toast.success(" Preferences saved!");
                     } catch (error) {
-                      toast.error(' Network error');
+                      toast.error(" Network error");
                       console.error(error);
                     }
                   }}
@@ -640,10 +646,10 @@ export default function UserTable<TData, TValue>({
                   <Button
                     size="custom"
                     className={cn(
-                      'flex-1 p-2',
+                      "flex-1 p-2",
                       Object.values(tempColumnVisibility).every(Boolean)
-                        ? 'bg-green-500 text-white hover:bg-green-600'
-                        : 'border-green-500 hover:bg-gray-500'
+                        ? "bg-green-500 text-white hover:bg-green-600"
+                        : "border-green-500 hover:bg-gray-500"
                     )}
                     onClick={() => {
                       const allVisible =
@@ -658,8 +664,8 @@ export default function UserTable<TData, TValue>({
                     }}
                   >
                     {Object.values(tempColumnVisibility).every(Boolean)
-                      ? 'Deselect All'
-                      : 'Select All'}
+                      ? "Deselect All"
+                      : "Select All"}
                   </Button>
                   <Button
                     variant="outline"
@@ -669,9 +675,9 @@ export default function UserTable<TData, TValue>({
                       const ids = table
                         .getAllColumns()
                         .map((c) => c.id)
-                        .filter((id) => id !== 'select' && id !== 'actions');
+                        .filter((id) => id !== "select" && id !== "actions");
                       setTempColumnOrder(ids);
-                      toast('✅ Order reset Successfully');
+                      toast("✅ Order reset Successfully");
                     }}
                   >
                     Reset
@@ -711,7 +717,7 @@ export default function UserTable<TData, TValue>({
                             .getAllColumns()
                             .map((c) => c.id)
                             .filter(
-                              (id) => id !== 'select' && id !== 'actions'
+                              (id) => id !== "select" && id !== "actions"
                             );
                           let order =
                             tempColumnOrder && tempColumnOrder.length
@@ -722,7 +728,7 @@ export default function UserTable<TData, TValue>({
                           );
                           if (missing.length) order = [...order, ...missing];
                           const finalOrder = order.filter(
-                            (id) => id !== 'select' && id !== 'actions'
+                            (id) => id !== "select" && id !== "actions"
                           );
                           return finalOrder.map((colId) => {
                             const column = table
@@ -731,7 +737,7 @@ export default function UserTable<TData, TValue>({
                             if (!column) return null;
                             const canHide = column.getCanHide();
                             const header =
-                              typeof column.columnDef.header === 'string'
+                              typeof column.columnDef.header === "string"
                                 ? column.columnDef.header
                                 : column.id;
                             return (
@@ -787,10 +793,10 @@ export default function UserTable<TData, TValue>({
                           let orderToApply = tempColumnOrder.filter((id) =>
                             existing.includes(id)
                           );
-                          if (existing.includes('select')) {
+                          if (existing.includes("select")) {
                             orderToApply = [
-                              'select',
-                              ...orderToApply.filter((id) => id !== 'select'),
+                              "select",
+                              ...orderToApply.filter((id) => id !== "select"),
                             ];
                           }
                           if (orderToApply.length)
@@ -811,21 +817,21 @@ export default function UserTable<TData, TValue>({
                         const res = await fetch(
                           `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/preferences`,
                           {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            credentials: "include",
                             body: JSON.stringify(payload),
                           }
                         );
 
                         if (!res.ok) {
-                          toast.error(' Failed to save preferences');
+                          toast.error(" Failed to save preferences");
                           return;
                         }
 
-                        toast.success(' Preferences saved!');
+                        toast.success(" Preferences saved!");
                       } catch (error) {
-                        toast.error(' Network error');
+                        toast.error(" Network error");
                         console.error(error);
                       }
                     }}
@@ -858,7 +864,7 @@ export default function UserTable<TData, TValue>({
                 <SheetHeader>
                   <SheetTitle> User Information</SheetTitle>
                   <SheetDescription
-                    className={cn('mb-0 pb-0')}
+                    className={cn("mb-0 pb-0")}
                   ></SheetDescription>
                 </SheetHeader>
                 <AddUser />
@@ -917,14 +923,14 @@ export default function UserTable<TData, TValue>({
                         <TableHead
                           key={header.id}
                           className={`whitespace-nowrap font-semibold text-black dark:text-white ${
-                            header.id === 'actions' ? 'sticky -right-[1px]' : ''
+                            header.id === "actions" ? "sticky -right-[1px]" : ""
                           }`}
                         >
                           {header.isPlaceholder ? null : (
                             <div
                               role={
                                 header.column.getCanSort()
-                                  ? 'button'
+                                  ? "button"
                                   : undefined
                               }
                               tabIndex={
@@ -938,7 +944,7 @@ export default function UserTable<TData, TValue>({
                               onKeyDown={
                                 header.column.getCanSort()
                                   ? (e) => {
-                                      if (e.key === 'Enter' || e.key === ' ') {
+                                      if (e.key === "Enter" || e.key === " ") {
                                         e.preventDefault();
                                         header.column.getToggleSortingHandler()?.(
                                           e as any
@@ -948,10 +954,10 @@ export default function UserTable<TData, TValue>({
                                   : undefined
                               }
                               className={cn(
-                                'flex items-center gap-2 cursor-pointer select-none',
+                                "flex items-center gap-2 cursor-pointer select-none",
                                 header.column.getCanSort()
-                                  ? 'hover:opacity-80'
-                                  : ''
+                                  ? "hover:opacity-80"
+                                  : ""
                               )}
                             >
                               {flexRender(
@@ -960,11 +966,11 @@ export default function UserTable<TData, TValue>({
                               )}
                               {header.column.getCanSort() ? (
                                 <span className="ml-2 text-sm text-muted-foreground">
-                                  {header.column.getIsSorted() === 'asc'
-                                    ? '▲'
-                                    : header.column.getIsSorted() === 'desc'
-                                    ? '▼'
-                                    : ''}
+                                  {header.column.getIsSorted() === "asc"
+                                    ? "▲"
+                                    : header.column.getIsSorted() === "desc"
+                                    ? "▼"
+                                    : ""}
                                 </span>
                               ) : null}
                             </div>
@@ -980,15 +986,15 @@ export default function UserTable<TData, TValue>({
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
+                      data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
                           className={`whitespace-nowrap ${
-                            cell.column.id === 'actions'
-                              ? 'sticky -right-[1px] text-center bg-background z-10'
-                              : ''
+                            cell.column.id === "actions"
+                              ? "sticky -right-[1px] text-center bg-background z-10"
+                              : ""
                           }`}
                         >
                           {flexRender(
@@ -1022,9 +1028,9 @@ export default function UserTable<TData, TValue>({
                   .getVisibleCells()
                   .filter(
                     (c) =>
-                      c.column.id !== 'select' &&
-                      c.column.id !== 'actions' &&
-                      c.column.id !== 'id'
+                      c.column.id !== "select" &&
+                      c.column.id !== "actions" &&
+                      c.column.id !== "id"
                   );
 
                 return (
@@ -1042,7 +1048,7 @@ export default function UserTable<TData, TValue>({
                             >
                               <div className="text-sm font-semibold text-muted-foreground">
                                 {typeof cell.column.columnDef.header ===
-                                'string'
+                                "string"
                                   ? cell.column.columnDef.header
                                   : cell.column.id}
                               </div>
@@ -1061,16 +1067,16 @@ export default function UserTable<TData, TValue>({
                         {/* actions cell (if present) */}
                         {row
                           .getVisibleCells()
-                          .find((c) => c.column.id === 'actions') ? (
+                          .find((c) => c.column.id === "actions") ? (
                           <div className="absolute top-0 right-2">
                             {flexRender(
                               row
                                 .getVisibleCells()
-                                .find((c) => c.column.id === 'actions')!.column
+                                .find((c) => c.column.id === "actions")!.column
                                 .columnDef.cell,
                               row
                                 .getVisibleCells()
-                                .find((c) => c.column.id === 'actions')!
+                                .find((c) => c.column.id === "actions")!
                                 .getContext()
                             )}
                           </div>
@@ -1147,8 +1153,8 @@ export default function UserTable<TData, TValue>({
                 ),
                 table.getRowCount()
               )}
-            </span>{' '}
-            of{' '}
+            </span>{" "}
+            of{" "}
             <span className="text-foreground">
               {table.getRowCount().toString()}
             </span>

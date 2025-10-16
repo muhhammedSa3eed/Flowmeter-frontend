@@ -142,7 +142,7 @@ export default function RFpDataTable<TData, TValue>({
   useEffect(() => {
     setDataTable(data);
     // mark that data has been received and applied
-    setDataLoaded(true);
+    // setDataLoaded(true);
   }, [data]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     preferences || {}
@@ -220,11 +220,11 @@ export default function RFpDataTable<TData, TValue>({
           }
         }
 
-        setPrefsLoaded(true);
+        // setPrefsLoaded(true);
       } catch (error) {
         console.error(" Error loading preferences:", error);
         // don't block rendering forever — allow table to render with defaults
-        setPrefsLoaded(true);
+        // setPrefsLoaded(true);
       }
     };
 
@@ -405,18 +405,18 @@ export default function RFpDataTable<TData, TValue>({
     XLSX.writeFile(workbook, "flow-meters.xlsx");
   };
 
-  if (!prefsLoaded || !dataLoaded) {
-    return (
-      <div className="bg-background overflow-hidden rounded-md border p-8">
-        <div className="animate-pulse">
-          <div className="h-6 bg-slate-200 rounded w-1/3 mb-4" />
-          <div className="h-4 bg-slate-100 rounded w-full mb-2" />
-          <div className="h-4 bg-slate-100 rounded w-full mb-2" />
-          <div className="h-4 bg-slate-100 rounded w-3/4" />
-        </div>
-      </div>
-    );
-  }
+  // if (!prefsLoaded || !dataLoaded) {
+  //   return (
+  //     <div className="bg-background overflow-hidden rounded-md border p-8">
+  //       <div className="animate-pulse">
+  //         <div className="h-6 bg-slate-200 rounded w-1/3 mb-4" />
+  //         <div className="h-4 bg-slate-100 rounded w-full mb-2" />
+  //         <div className="h-4 bg-slate-100 rounded w-full mb-2" />
+  //         <div className="h-4 bg-slate-100 rounded w-3/4" />
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="space-y-4">

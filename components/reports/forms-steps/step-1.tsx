@@ -1,26 +1,43 @@
-"use client";
+'use client';
 
 import {
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import MultipleSelector, { Option } from '@/components/ui/multiselect';
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select";
-import { ReportSchema } from "@/schemas";
-import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
+} from '@/components/ui/select';
+import { distOptions } from '@/lib/static-data';
+import { ReportSchema } from '@/schemas';
+import { UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
 type StepOneProps = {
   form: UseFormReturn<z.infer<typeof ReportSchema>>;
 };
+const effectsOptions: Option[] = [
+  { value: '1', label: 'Effect 1' },
+  { value: '2', label: 'Effect 2' },
+  { value: '3', label: 'Effect 3' },
+  { value: '4', label: 'Effect 4' },
+  { value: '5', label: 'Effect 5' },
+];
+
+const hydraulicOptions: Option[] = [
+  { value: '1', label: 'Hydraulic 1' },
+  { value: '2', label: 'Hydraulic 2' },
+  { value: '3', label: 'Hydraulic 3' },
+  { value: '4', label: 'Hydraulic 4' },
+  { value: '5', label: 'Hydraulic 5' },
+];
 const StepOne = ({ form }: StepOneProps) => {
   return (
     <div className=" px-6 space-y-6 ">
@@ -36,19 +53,29 @@ const StepOne = ({ form }: StepOneProps) => {
 
           <FormField
             control={form.control}
-            name="primaryMeteringDevice.specifiedUncertainty.relativeUncertainty"
+            name="primaryMeteringDevice.specifiedManufacturerUncertainty.relativeUncertainty"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="2%" {...field} />
+                  <Input
+                    placeholder="2%"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
-            name="primaryMeteringDevice.specifiedUncertainty.probabilityDistribution"
+            name="primaryMeteringDevice.specifiedManufacturerUncertainty.probabilityDistribution"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
@@ -60,8 +87,13 @@ const StepOne = ({ form }: StepOneProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {/* <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="uniform">Uniform</SelectItem> */}
+                      {distOptions.map((opt: string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -71,11 +103,20 @@ const StepOne = ({ form }: StepOneProps) => {
           />
           <FormField
             control={form.control}
-            name="primaryMeteringDevice.specifiedUncertainty.sensitivityCoefficient"
+            name="primaryMeteringDevice.specifiedManufacturerUncertainty.sensitivityCoefficient"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -86,24 +127,50 @@ const StepOne = ({ form }: StepOneProps) => {
         {/* Row 2 */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label className="col-span-1">Installation Effect:</Label>
-          <FormField
+          {/* <FormField
             control={form.control}
             name="primaryMeteringDevice.installationEffects.effectsRelativeUncertaintyList"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
                   <Select
-                    onValueChange={(val) => field.onChange([val])}
-                    value={field.value?.[0]}
+                    onValueChange={(val) => field.onChange([Number(val)])}
+                    value={field.value?.[0]?.toString()}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Drop-down" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="effect1">Effect 1</SelectItem>
-                      <SelectItem value="effect2">Effect 2</SelectItem>
+                      <SelectItem value="1">Effect 1</SelectItem>
+                      <SelectItem value="2">Effect 2</SelectItem>
                     </SelectContent>
                   </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> */}
+          <FormField
+            control={form.control}
+            name="primaryMeteringDevice.installationEffects.effectsRelativeUncertaintyList"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <MultipleSelector
+                    defaultOptions={effectsOptions}
+                    placeholder="Select Effects Relative Uncertainty List"
+                    value={effectsOptions.filter((f) =>
+                      field.value.includes(Number(f.value))
+                    )}
+                    onChange={(selected) =>
+                      field.onChange(selected.map((item) => Number(item.value)))
+                    }
+                    hideClearAllButton
+                    hidePlaceholderWhenSelected
+                    emptyIndicator={
+                      <p className="text-center text-sm">No results found</p>
+                    }
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -123,21 +190,34 @@ const StepOne = ({ form }: StepOneProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt: string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="primaryMeteringDevice.installationEffects.probabilityDistribution"
+            name="primaryMeteringDevice.installationEffects.sensitivityCoefficient"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -148,25 +228,52 @@ const StepOne = ({ form }: StepOneProps) => {
         {/* Row 3 */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label className="col-span-1">Hydraulic Effects:</Label>
-          <FormField
+          {/* <FormField
             control={form.control}
             name="primaryMeteringDevice.hydraulicEffect.effectsRelativeUncertaintyList"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
                   <Select
-                    onValueChange={(val) => field.onChange([val])}
-                    value={field.value?.[0]}
+                    onValueChange={(val) => field.onChange([Number(val)])}
+                    value={field.value?.[0]?.toString()}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Drop-down" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="hydro1">Hydraulic 1</SelectItem>
-                      <SelectItem value="hydro2">Hydraulic 2</SelectItem>
+                      <SelectItem value="1">Hydraulic 1</SelectItem>
+                      <SelectItem value="2">Hydraulic 2</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> */}
+          <FormField
+            control={form.control}
+            name="primaryMeteringDevice.hydraulicEffect.effectsRelativeUncertaintyList"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <MultipleSelector
+                    defaultOptions={hydraulicOptions}
+                    placeholder="Select Effects Relative Uncertainty List"
+                    value={hydraulicOptions.filter((f) =>
+                      field.value.includes(Number(f.value))
+                    )}
+                    onChange={(selected) =>
+                      field.onChange(selected.map((item) => Number(item.value)))
+                    }
+                    hideClearAllButton
+                    hidePlaceholderWhenSelected
+                    emptyIndicator={
+                      <p className="text-center text-sm">No results found</p>
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -184,21 +291,34 @@ const StepOne = ({ form }: StepOneProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt: string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="primaryMeteringDevice.installationEffects.sensitivityCoefficient"
+            name="primaryMeteringDevice.hydraulicEffect.sensitivityCoefficient"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -215,7 +335,16 @@ const StepOne = ({ form }: StepOneProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="1%" {...field} />
+                  <Input
+                    placeholder="1%"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -236,11 +365,15 @@ const StepOne = ({ form }: StepOneProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt: string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -251,7 +384,16 @@ const StepOne = ({ form }: StepOneProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="1.0" {...field} />
+                  <Input
+                    placeholder="1.0"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -269,7 +411,16 @@ const StepOne = ({ form }: StepOneProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="T oper | [C]" {...field} />
+                  <Input
+                    placeholder="T oper | [C]"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -285,8 +436,18 @@ const StepOne = ({ form }: StepOneProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1 col-start-2">
                 <FormControl>
-                  <Input placeholder="Delta (T) | [C]" {...field} />
+                  <Input
+                    placeholder="Delta (T) | [C]"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -304,11 +465,15 @@ const StepOne = ({ form }: StepOneProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt: string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -318,8 +483,17 @@ const StepOne = ({ form }: StepOneProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1 col-start-4">
                 <FormControl>
-                  <Input placeholder="sens. factor" className="" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

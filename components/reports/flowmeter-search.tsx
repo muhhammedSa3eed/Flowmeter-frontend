@@ -18,22 +18,24 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Label } from '../ui/label';
+import { RFP } from '@/types';
 
 // نوع الداتا
-type Rfp = {
-  id: number;
-  RfpReference: string;
-  typeOfRfp: string;
-  generalInfo: {
-    licensee: string;
-  };
-};
+// type Rfp = {
+//   id: number;
+//   RfpReference: string;
+//   typeOfRfp: string;
+//   generalInfo: {
+//     licensee: string;
+//   };
+// };
 
 interface Props {
-  data: Rfp[];
-  onSelect?: (item: Rfp | null) => void;
+  data: RFP[];
+  onSelect?: (item: RFP | null) => void;
   setShowStepsForm: React.Dispatch<React.SetStateAction<boolean>>;
   setRfpIdData: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setFormData:React.Dispatch<React.SetStateAction<RFP | null>>
 }
 
 export function FlowMeterSearch({
@@ -41,17 +43,19 @@ export function FlowMeterSearch({
   onSelect,
   setShowStepsForm,
   setRfpIdData,
+  setFormData
 }: Props) {
   console.log('from search', data);
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<Rfp | null>(null);
+  const [selected, setSelected] = React.useState<RFP | null>(null);
 
-  const handleSelect = (item: Rfp) => {
+  const handleSelect = (item: RFP) => {
     console.log({ item });
     setRfpIdData(item.id);
     setSelected(item);
     onSelect?.(item);
     setOpen(false);
+    setFormData(item)
   };
 
   React.useEffect(() => {

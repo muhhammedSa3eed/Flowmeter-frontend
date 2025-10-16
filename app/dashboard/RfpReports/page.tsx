@@ -29,7 +29,15 @@ async function getAllReports(): Promise<report[]> {
 
   const rfp = await response.json();
   console.log("RFP Data :", rfp);
-  return rfp;
+
+  // Normalize response: accept array or wrapped shapes like { reports: [...] } or { data: [...] }
+  if (Array.isArray(rfp)) return rfp as report[];
+  if (rfp?.reports && Array.isArray(rfp.reports))
+    return rfp.reports as report[];
+  if (rfp?.data && Array.isArray(rfp.data)) return rfp.data as report[];
+
+  // fallback to empty array to avoid passing an object into the table
+  return [];
 }
 // const reportData = [
 //   {

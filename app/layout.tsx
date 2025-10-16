@@ -39,7 +39,7 @@ export default function RootLayout({
         >
           <CookiesProvider>{children}</CookiesProvider>
 
-          <Toaster position="bottom-right" />
+          <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>

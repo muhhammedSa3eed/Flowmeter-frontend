@@ -1,20 +1,20 @@
-"use client";
-import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+'use client';
+import { AlertDialog, AlertDialogContent } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
-import { EllipsisIcon, Eye, Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { Row } from "@tanstack/react-table";
-import { RFP } from "@/types";
-import DeleteRFP from "@/components/CRUD/RFP/DeleteRFP";
-import Link from "next/link";
+import { EllipsisIcon, Eye, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Row } from '@tanstack/react-table';
+import { RFP } from '@/types';
+import DeleteRFP from '@/components/CRUD/RFP/DeleteRFP';
+import Link from 'next/link';
 
 type RowActionsProps = {
   row: Row<RFP>;
@@ -53,7 +53,7 @@ export default function RowActions({ row }: RowActionsProps) {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link
-                href={`/dashboard/RfpReports/${row.original.id}`}
+                href={`/dashboard/Rfp-Compliance/${row.original.id}/reports`}
                 className="flex justify-between items-center w-full"
               >
                 <span>View Reports</span>
@@ -71,7 +71,6 @@ export default function RowActions({ row }: RowActionsProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      
       <AlertDialog
         open={isDeleteDeviceOpen}
         onOpenChange={setIsDeleteDeviceOpen}

@@ -1,0 +1,86 @@
+{
+  "title": "Report",
+  "rfpId": 2,
+  "primaryMeteringDevice": {
+    "specifiedManufacturerUncertainty": {
+      "relativeUncertainty": 0.02,
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 1
+    },
+    "installationEffects": {
+      "effectsRelativeUncertaintyList": [1, 2, 3],
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 1
+    },
+    "hydraulicEffect": {
+      "effectsRelativeUncertaintyList": [1, 2, 3],
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 1
+    },
+    "unsteadyFlow": {
+      "relativeUncertainty": 0.02,
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 1
+    },
+    "envTemperatureEffect": {
+      "opertTemperatureC": 25,
+      "uncertTemperatureC": 0.5,
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 1
+    }
+  },
+  "secondaryMeteringDevice": {
+    "electronicInstrumentation": {
+      "relativeUncertainty": 0.02,
+      "probabilityDistribution": "uniform",
+      "sensitivityCoefficient": 2
+    },
+    "displayResolution": {
+      "noDecimalPoints": 2,
+      "maxCurrentOutput": 23,
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 2
+    },
+    "signalConversion": {
+      "fullFlowScale": 80,
+      "minCurrentOutput": 4,
+      "maxCurrentOutput": 20,
+      "repeatabilityError": 0.004,
+      "meterAccuracy": 0.008,
+      "testSamples": [
+        [13, 3],
+        [3, 2],
+        [13, 3]
+      ],
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 1
+    }
+  },
+  "dataCollection": {
+    "weightedError": {
+      "startDate": "2024-12-02",
+      "flowMeterDiameter": 2,
+      "endDate": "2024-12-03",
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 1
+    },
+    "dataSignalConversion": {
+      "noDecimalPoints": 2,
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 1,
+      "adcAccuracy": 2,
+      "manufacturerRef": 2
+    },
+    "estimatesForMissingData": {
+      "relativeUncertainty": 2,
+      "probabilityDistribution": "normal",
+      "sensitivityCoefficient": 1
+    }
+  },
+  "inSituFlowComparison": {
+    "flowReferenceStandard": 90,
+    "probabilityDistribution": "normal",
+    "sensitivityCoefficient": 2
+  },
+  "coverageProbability": 45
+}

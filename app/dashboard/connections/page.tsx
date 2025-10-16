@@ -30,9 +30,17 @@ async function getDevices(): Promise<DeviceDB[]> {
     }
   );
   console.log({ response });
-  // if (!response.ok) throw new Error("Failed to fetch devices");
+  // normalize response to always return an array
+  const DevicesData = await response.json();
 
-  return await response.json();
+  if (Array.isArray(DevicesData)) return DevicesData as DeviceDB[];
+  if (DevicesData?.devices && Array.isArray(DevicesData.devices))
+    return DevicesData.devices as DeviceDB[];
+  if (DevicesData?.data && Array.isArray(DevicesData.data))
+    return DevicesData.data as DeviceDB[];
+
+  // fallback: return empty array to avoid passing an object into the table
+  return [];
 }
 const tableName = "ConnectionsTable";
 

@@ -413,7 +413,38 @@ export interface Role {
   name: string;
   tablePermissions: TablePermission[];
 }
+export type SectionType = {
+  [key: string]: {
+    relativeUncertainty: number;
+    probabilityDistribution: string;
+    divisionFactor: number;
+    sensitivityCoefficient: number;
+    stdUncert: number;
+  };
+};
 
+export type DataType = {
+  title: string;
+  rfpId: number;
+  primaryMeteringDevice: SectionType;
+  secondaryMeteringDevice: SectionType;
+  dataCollection: SectionType;
+  inSituFlowComparison: {
+    relativeUncertainty: number;
+    probabilityDistribution: string;
+    divisionFactor: number;
+    sensitivityCoefficient: number;
+    stdUncert: number;
+  };
+  combinedPrimaryDeviceUncert: number;
+  combinedSecondaryDeviceUncert: number;
+  combinedDataCollectionUncert: number;
+  combinedInSitueUncert: number;
+  overallCombinedUncert: number;
+  coverageProbability: number;
+  coverageFactor: number;
+  expandedUncert: number;
+};
 // export type User = {
 //   id: string;
 //   username: string;
@@ -456,6 +487,7 @@ export type PermissionPayload = {
 };
 
 export interface Report {
+  rfpId: number;
   id: number;
   name: string;
   createdAt: string;

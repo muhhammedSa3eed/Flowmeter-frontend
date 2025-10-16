@@ -1,6 +1,11 @@
 'use client';
 
-import { FormControl, FormField, FormItem } from '@/components/ui/form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ReportSchema } from '@/schemas';
@@ -27,8 +32,18 @@ const StepFive = ({ form }: StepFiveProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="0.95" {...field} />
+                  <Input
+                    placeholder="0.95"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

@@ -180,16 +180,18 @@ export default function ConnectDataTable<TData, TValue>({
     // mark that data has been received and applied
     setDataLoaded(true);
   }, [data]);
+  // Initialize visibility from passed-in preferences if available
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    preferences || {}
+    (preferences && (preferences.visibility || preferences)) || {}
   );
   const [tempColumnVisibility, setTempColumnVisibility] = useState(
-    preferences || {}
+    (preferences && (preferences.visibility || preferences)) || {}
   );
   const [tempColumnOrder, setTempColumnOrder] = useState<string[]>(
     (preferences && (preferences.order as string[])) || []
   );
-  const [prefsLoaded, setPrefsLoaded] = useState(false);
+  // mark prefsLoaded true if preferences prop was provided to avoid blocking UI
+  const [prefsLoaded, setPrefsLoaded] = useState<boolean>(Boolean(preferences));
   const sensors = useSensors(useSensor(PointerSensor));
 
   // Load preferences from server (if any) and apply to temp state
@@ -223,8 +225,12 @@ export default function ConnectDataTable<TData, TValue>({
           }
           setPrefsLoaded(true);
         }
+        // if server responded but no preferences object, still mark as loaded
+        setPrefsLoaded(true);
       } catch (error) {
         console.error(" Error loading preferences:", error);
+        // avoid blocking the UI when preferences endpoint fails or returns nothing
+        setPrefsLoaded(true);
       }
     };
     fetchPreferences();

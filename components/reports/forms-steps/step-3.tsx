@@ -30,6 +30,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { addDays, format, isValid, parseISO } from 'date-fns';
 import { useEffect } from 'react';
+import { distOptions } from '@/lib/static-data';
 
 type StepThreeProps = {
   form: UseFormReturn<z.infer<typeof ReportSchema>>;
@@ -123,8 +124,13 @@ const StepThree = ({ form }: StepThreeProps) => {
                             date ? format(date, 'yyyy-MM-dd') : undefined
                           )
                         }
-                        disabled={(date) => date < new Date('1900-01-01')}
+                        disabled={(date) =>
+                          date < new Date('2004-01-01') ||
+                          date > new Date('2024-12-31')
+                        }
                         captionLayout="dropdown"
+                        startMonth={new Date(2004, 0)}
+                        endMonth={new Date(2024, 11)}
                       />
                     </PopoverContent>
                   </Popover>
@@ -173,8 +179,13 @@ const StepThree = ({ form }: StepThreeProps) => {
                             date ? format(date, 'yyyy-MM-dd') : undefined
                           )
                         }
-                        disabled={(date) => date < new Date('1900-01-01')}
+                        disabled={(date) =>
+                          date < new Date('2004-01-01') ||
+                          date > new Date('2024-12-31')
+                        }
                         captionLayout="dropdown"
+                        startMonth={new Date(2004, 0)}
+                        endMonth={new Date(2024, 11)}
                       />
                     </PopoverContent>
                   </Popover>
@@ -187,11 +198,20 @@ const StepThree = ({ form }: StepThreeProps) => {
 
           <FormField
             control={form.control}
-            name="dataCollection.weightedError.diameter"
+            name="dataCollection.weightedError.flowMeterDiameter"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="diameter" {...field} />
+                  <Input
+                    placeholder="diameter"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -212,8 +232,11 @@ const StepThree = ({ form }: StepThreeProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt: string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -228,7 +251,16 @@ const StepThree = ({ form }: StepThreeProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -246,8 +278,19 @@ const StepThree = ({ form }: StepThreeProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input id="display" placeholder="Decimal Pts" {...field} />
+                  <Input
+                    id="display"
+                    placeholder="Decimal Pts"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -265,11 +308,15 @@ const StepThree = ({ form }: StepThreeProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt: string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -279,8 +326,61 @@ const StepThree = ({ form }: StepThreeProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div></div>
+          <FormField
+            control={form.control}
+            name="dataCollection.dataSignalConversion.adcAccuracy"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormControl>
+                  <Input
+                    placeholder="ADCAccuracy"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dataCollection.dataSignalConversion.manufacturerRef"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormControl>
+                  <Input
+                    placeholder="Manufacturer Ref"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -296,8 +396,18 @@ const StepThree = ({ form }: StepThreeProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="2%" {...field} />
+                  <Input
+                    placeholder="2%"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -315,11 +425,15 @@ const StepThree = ({ form }: StepThreeProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt: string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -329,8 +443,18 @@ const StepThree = ({ form }: StepThreeProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

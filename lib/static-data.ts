@@ -1012,3 +1012,117 @@ export const LOCATIONS: Location[] = [
     hours_til_maintenance: 1994,
   },
 ];
+
+export const steps = [
+  {
+    id: 1,
+    label: 'Primary Metering Device',
+    fields: [
+      // specifiedManufacturerUncertainty
+      'primaryMeteringDevice.specifiedManufacturerUncertainty.relativeUncertainty',
+      'primaryMeteringDevice.specifiedManufacturerUncertainty.probabilityDistribution',
+      'primaryMeteringDevice.specifiedManufacturerUncertainty.sensitivityCoefficient',
+
+      // installationEffects
+      'primaryMeteringDevice.installationEffects.effectsRelativeUncertaintyList',
+      'primaryMeteringDevice.installationEffects.probabilityDistribution',
+      'primaryMeteringDevice.installationEffects.sensitivityCoefficient',
+
+      // hydraulicEffect
+      'primaryMeteringDevice.hydraulicEffect.effectsRelativeUncertaintyList',
+      'primaryMeteringDevice.hydraulicEffect.probabilityDistribution',
+      'primaryMeteringDevice.hydraulicEffect.sensitivityCoefficient',
+
+      // unsteadyFlow
+      'primaryMeteringDevice.unsteadyFlow.relativeUncertainty',
+      'primaryMeteringDevice.unsteadyFlow.probabilityDistribution',
+      'primaryMeteringDevice.unsteadyFlow.sensitivityCoefficient',
+
+      // envTemperatureEffect
+      'primaryMeteringDevice.envTemperatureEffect.opertTemperatureC',
+      'primaryMeteringDevice.envTemperatureEffect.uncertTemperatureC',
+      'primaryMeteringDevice.envTemperatureEffect.probabilityDistribution',
+      'primaryMeteringDevice.envTemperatureEffect.sensitivityCoefficient',
+    ],
+  },
+  {
+    id: 2,
+    label: 'Secondary Metering Device',
+    fields: [
+      // electronicInstrumentation
+      'secondaryMeteringDevice.electronicInstrumentation.relativeUncertainty',
+      'secondaryMeteringDevice.electronicInstrumentation.probabilityDistribution',
+      'secondaryMeteringDevice.electronicInstrumentation.sensitivityCoefficient',
+
+      // displayResolution
+      'secondaryMeteringDevice.displayResolution.noDecimalPoints',
+      'secondaryMeteringDevice.displayResolution.maxCurrentOutput',
+      'secondaryMeteringDevice.displayResolution.probabilityDistribution',
+      'secondaryMeteringDevice.displayResolution.sensitivityCoefficient',
+
+      // signalConversion
+      'secondaryMeteringDevice.signalConversion.maxCurrentOutput',
+      'secondaryMeteringDevice.signalConversion.fullFlowScale',
+      'secondaryMeteringDevice.signalConversion.minCurrentOutput',
+      'secondaryMeteringDevice.signalConversion.repeatabilityError',
+      'secondaryMeteringDevice.signalConversion.meterAccuracy',
+      'secondaryMeteringDevice.signalConversion.testSamples',
+      'secondaryMeteringDevice.signalConversion.probabilityDistribution',
+      'secondaryMeteringDevice.signalConversion.sensitivityCoefficient',
+    ],
+  },
+  {
+    id: 3,
+    label: 'Data Collection',
+    fields: [
+      // weightedError
+      'dataCollection.weightedError.startDate',
+      'dataCollection.weightedError.endDate',
+      'dataCollection.weightedError.probabilityDistribution',
+      'dataCollection.weightedError.sensitivityCoefficient',
+      'dataCollection.weightedError.flowMeterDiameter',
+
+      // dataSignalConversion
+      'dataCollection.dataSignalConversion.noDecimalPoints',
+      'dataCollection.dataSignalConversion.adcAccuracy',
+      'dataCollection.dataSignalConversion.manufacturerRef',
+      'dataCollection.dataSignalConversion.probabilityDistribution',
+      'dataCollection.dataSignalConversion.sensitivityCoefficient',
+
+      // estimatesForMissingData
+      'dataCollection.estimatesForMissingData.relativeUncertainty',
+      'dataCollection.estimatesForMissingData.probabilityDistribution',
+      'dataCollection.estimatesForMissingData.sensitivityCoefficient',
+    ],
+  },
+  {
+    id: 4,
+    label: 'In-Situ Flow Comparison',
+    fields: [
+      'inSituFlowComparison.flowReferenceStandard',
+      'inSituFlowComparison.probabilityDistribution',
+      'inSituFlowComparison.sensitivityCoefficient',
+    ],
+  },
+
+  {
+    id: 5,
+    label: 'Coverage Probability',
+    fields: ['coverageProbability'],
+  },
+  {
+    id: 6,
+    label: 'Review & Generate Report',
+  },
+];
+
+export const distOptions = [
+  'normal',
+  'rectangular',
+  'uniform',
+  'triangular',
+  'trapezoidal',
+  'U_shaped',
+  'rayleigh',
+  'exponential',
+];

@@ -352,47 +352,607 @@ export const VerifyOtpSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
   otp: z.string().min(1, { message: 'otp is required' }),
 });
-export const UncertaintySchema = z.object({
-  relativeUncertainty: z.number().optional(),
-  effectsRelativeUncertaintyList: z.array(z.any()).optional(),
-  opertTemperatureC: z.number().optional(),
-  uncertTemperatureC: z.number().optional(),
-  noDecimalPoints: z.number().optional(),
-  maxCurrentOutput: z.number().optional(),
-  fullFlowScale: z.number().optional(),
-  minCurrentOutput: z.number().optional(),
-  repeatabilityError: z.number().optional(),
-  meterAccuracy: z.number().optional(),
-  testSamples: z.array(z.tuple([z.number(), z.number()])).optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-  flowReferenceStandard: z.number().optional(),
-  probabilityDistribution: z.string(),
-  sensitivityCoefficient: z.number(),
-  diameter: z.string().optional(),
-});
 
 export const ReportSchema = z.object({
+  // ==================== Step 1: Primary Metering Device ====================
   primaryMeteringDevice: z.object({
-    specifiedUncertainty: UncertaintySchema,
-    installationEffects: UncertaintySchema,
-    hydraulicEffect: UncertaintySchema,
-    unsteadyFlow: UncertaintySchema,
-    envTemperatureEffect: UncertaintySchema,
+    specifiedManufacturerUncertainty: z.object({
+      relativeUncertainty: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Relative Uncertainty is required',
+        })
+      ),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      //   sensitivityCoefficient: z.preprocess(
+      //     (val) => (val === '' ? undefined : Number(val)),
+      //     z.number({
+      //       required_error: 'Sensitivity Coefficient is required',
+      //     })
+      //     .refine((val) => !Number.isInteger(val), {
+      //   message: 'Value must be a float (decimal number)',
+      // })
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
+    installationEffects: z.object({
+      effectsRelativeUncertaintyList: z
+        .array(z.any(), {
+          required_error: 'Effects Relative Uncertainty List is required',
+        })
+        .min(1, 'At least one value is required'),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
+    hydraulicEffect: z.object({
+      effectsRelativeUncertaintyList: z
+        .array(z.any(), {
+          required_error: 'Effects Relative Uncertainty List is required',
+        })
+        .min(1, 'At least one value is required'),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
+    unsteadyFlow: z.object({
+      relativeUncertainty: z.coerce.number({
+        required_error: 'Relative Uncertainty is required',
+      }),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
+    envTemperatureEffect: z.object({
+      opertTemperatureC: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Operating Temperature (°C) is required',
+        })
+      ),
+
+      uncertTemperatureC: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Uncertainty Temperature (°C) is required',
+        })
+      ),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
   }),
+
+  // ==================== Step 2: Secondary Metering Device ====================
   secondaryMeteringDevice: z.object({
-    electronicInstrumentation: UncertaintySchema,
-    displayResolution: UncertaintySchema,
-    signalConversion: UncertaintySchema,
+    electronicInstrumentation: z.object({
+      relativeUncertainty: z.coerce.number({
+        required_error: 'Relative Uncertainty is required',
+      }),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
+    displayResolution: z.object({
+      noDecimalPoints: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Number of Decimal Points is required',
+        })
+      ),
+
+      maxCurrentOutput: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Max Current Output is required',
+        })
+      ),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
+    signalConversion: z.object({
+      maxCurrentOutput: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Max Current Output is required',
+        })
+      ),
+
+      fullFlowScale: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Full Flow Scale is required',
+        })
+      ),
+
+      minCurrentOutput: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Min Current Output is required',
+        })
+      ),
+
+      repeatabilityError: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Repeatability Error is required',
+        })
+      ),
+
+      meterAccuracy: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Meter Accuracy is required',
+        })
+      ),
+
+      testSamples: z
+        .array(
+          z.tuple([
+            z.coerce.number({
+              required_error: 'First test sample value is required',
+            }),
+            z.coerce.number({
+              required_error: 'Second test sample value is required',
+            }),
+          ])
+        )
+        .min(1, 'At least one test sample is required'),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
   }),
+
+  // // ==================== Step 3: Data Collection ====================
   dataCollection: z.object({
-    weightedError: UncertaintySchema,
-    dataSignalConversion: UncertaintySchema,
-    estimatesForMissingData: UncertaintySchema,
+    weightedError: z.object({
+      startDate: z
+        .string({ required_error: 'Start Date is required' })
+        .min(1, 'Start Date cannot be empty'),
+      endDate: z
+        .string({ required_error: 'End Date is required' })
+        .min(1, 'End Date cannot be empty'),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+      flowMeterDiameter: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+
+          const str = val.toString().trim();
+
+          // التحقق أن القيمة تحتوي على رقم ونقطة (عشري)
+          if (!/^\d*\.\d+$/.test(str)) return NaN;
+
+          return parseFloat(str);
+        },
+        z
+          .number({
+            required_error: 'Flow Meter Diameter is required',
+            invalid_type_error: 'Flow Meter Diameter must be a decimal number',
+          })
+          .refine((val) => !Number.isInteger(val), {
+            message:
+              'Flow Meter Diameter must be a decimal number (e.g., 5.0, 2.5)',
+          })
+      ),
+      // flowMeterDiameter:  z.preprocess(
+      //   (val) => {
+      //     if (val === '' || val === undefined || val === null) return undefined;
+      //     const str = val.toString();
+
+      //     if (str.includes('.')) return parseFloat(str);
+
+      //     return parseFloat(str + '.0');
+      //   },
+      //   z.number({
+      //     required_error: 'Flow Meter Diameter is required',
+      //   })
+      // ),
+    }),
+    dataSignalConversion: z.object({
+      noDecimalPoints: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Number of Decimal Points is required',
+        })
+      ),
+
+      adcAccuracy: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'ADC Accuracy is required',
+        })
+      ),
+
+      manufacturerRef: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Manufacturer Reference is required',
+        })
+      ),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
+    estimatesForMissingData: z.object({
+      relativeUncertainty: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Relative Uncertainty is required',
+        })
+      ),
+      probabilityDistribution: z
+        .string({ required_error: 'Probability Distribution is required' })
+        .min(1, 'Probability Distribution cannot be empty'),
+      sensitivityCoefficient: z.preprocess(
+        (val) => {
+          if (val === '' || val === undefined || val === null) return undefined;
+          const str = val.toString();
+
+          if (str.includes('.')) return parseFloat(str);
+
+          return parseFloat(str + '.0');
+        },
+        z.number({
+          required_error: 'Sensitivity Coefficient is required',
+        })
+      ),
+    }),
   }),
-  inSituFlowComparison: UncertaintySchema,
-  coverageProbability: z.number().optional(),
+
+  // // ==================== Step 4: In Situ Flow Comparison ====================
+  inSituFlowComparison: z.object({
+    flowReferenceStandard: z.coerce.number({
+      required_error: 'Flow Reference Standard is required',
+    }),
+    probabilityDistribution: z
+      .string({ required_error: 'Probability Distribution is required' })
+      .min(1, 'Probability Distribution cannot be empty'),
+
+    sensitivityCoefficient: z.preprocess(
+      (val) => (val === '' ? undefined : Number(val)),
+      z.number({
+        required_error: 'Sensitivity Coefficient is required',
+      })
+    ),
+  }),
+
+  // // ==================== Step 5: Coverage Probability ====================
+
+  // coverageProbability: z.preprocess(
+  //   (val) => (val === '' ? undefined : Number(val)),
+  //   z.number({
+  //     required_error: 'Coverage Probability is required',
+  //   })
+  // ),
+  coverageProbability: z.preprocess(
+    (val) => {
+      if (val === '' || val === undefined || val === null) return undefined;
+
+      const str = val.toString().trim();
+
+      // التحقق أن القيمة تحتوي على نقطة عشرية
+      if (!/^\d*\.\d+$/.test(str)) return NaN;
+
+      return parseFloat(str);
+    },
+    z
+      .number({
+        required_error: 'Coverage Probability is required',
+        invalid_type_error: 'Coverage Probability must be a decimal number',
+      })
+      .refine((val) => !Number.isInteger(val), {
+        message:
+          'Coverage Probability must be a decimal number (e.g., 0.95, 0.99)',
+      })
+  ),
 });
+// repeatabilityError: z.coerce.number({
+//   required_error: 'Repeatability Error is required',
+// }),
+// meterAccuracy: z.coerce.number({
+//   required_error: 'Meter Accuracy is required',
+// }),
+// noDecimalPoints: z.coerce.number({
+//   required_error: 'Number of Decimal Points is required',
+// }),
+// noDecimalPoints: z.coerce.number({
+//   required_error: 'Number of Decimal Points is required',
+// }),
+// minCurrentOutput: z.coerce.number({
+//   required_error: 'Min Current Output is required',
+// }),
+// flowMeterDiameter: z.coerce.number({
+//   required_error: 'Flow Meter Diameter is required',
+// }),
+// manufacturerRef: z.coerce.number({
+//   required_error: 'Manufacturer Reference is required',
+// }),
+// coverageProbability: z.coerce.number({
+//   required_error: 'Coverage Probability is required',
+// }),
+// relativeUncertainty: z.coerce.number({
+//   required_error: 'Relative Uncertainty is required',
+// }),
+
+// adcAccuracy: z.coerce.number({
+//   required_error: 'ADC Accuracy is required',
+// }),
+// export const UncertaintySchema = z.object({
+//   relativeUncertainty: z.number().optional(),
+//   effectsRelativeUncertaintyList: z.array(z.any()).optional(),
+//   opertTemperatureC: z.number().optional(),
+//   uncertTemperatureC: z.number().optional(),
+//   noDecimalPoints: z.number().optional(),
+//   maxCurrentOutput: z.number().optional(),
+//   fullFlowScale: z.number().optional(),
+//   minCurrentOutput: z.number().optional(),
+//   repeatabilityError: z.number().optional(),
+//   meterAccuracy: z.number().optional(),
+//   testSamples: z.array(z.tuple([z.number(), z.number()])).optional(),
+//   startDate: z.string().optional(),
+//   endDate: z.string().optional(),
+//   flowReferenceStandard: z.number().optional(),
+//   probabilityDistribution: z.string(),
+//   sensitivityCoefficient: z.number(),
+//   flowMeterDiameter: z.number().optional(),
+//   adcAccuracy: z.number().optional(),
+//   manufacturerRef: z.number().optional(),
+// });
+
+// export const ReportSchema = z.object({
+//   primaryMeteringDevice: z.object({
+//     specifiedManufacturerUncertainty: UncertaintySchema,
+//     installationEffects: UncertaintySchema,
+//     hydraulicEffect: UncertaintySchema,
+//     unsteadyFlow: UncertaintySchema,
+//     envTemperatureEffect: UncertaintySchema,
+//   }),
+//   secondaryMeteringDevice: z.object({
+//     electronicInstrumentation: UncertaintySchema,
+//     displayResolution: UncertaintySchema,
+//     signalConversion: UncertaintySchema,
+//   }),
+//   dataCollection: z.object({
+//     weightedError: UncertaintySchema,
+//     dataSignalConversion: UncertaintySchema,
+//     estimatesForMissingData: UncertaintySchema,
+//   }),
+//   inSituFlowComparison: UncertaintySchema,
+//   coverageProbability: z.number().optional(),
+// });
 
 // export const UncertaintySchema = z.object({
 //   'relativeUncertainty': z.number().optional(),
@@ -434,3 +994,7 @@ export const ReportSchema = z.object({
 //   'inSituFlowComparison': UncertaintySchema,
 //   'coverageProbability': z.number(),
 // });
+
+// relativeUncertainty: z.coerce.number({
+//   required_error: 'Relative Uncertainty is required',
+// }),

@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
 import {
   Table,
   TableBody,
@@ -29,12 +29,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { ReportSchema } from "@/schemas";
-import { useState } from "react";
-import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
-import { useFieldArray } from "react-hook-form";
+} from '@/components/ui/table';
+import { ReportSchema } from '@/schemas';
+import { useState } from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
+import { useFieldArray } from 'react-hook-form';
+import { distOptions } from '@/lib/static-data';
 
 type StepTwoProps = {
   form: UseFormReturn<z.infer<typeof ReportSchema>>;
@@ -43,11 +44,8 @@ const StepTwo = ({ form }: StepTwoProps) => {
   const [open, setOpen] = useState(false);
   const { control } = form;
 
-  const { fields } = useFieldArray({
-    control,
-    name: "secondaryMeteringDevice.signalConversion.testSamples",
-  });
-
+  
+  
   return (
     <div className=" px-6 space-y-6 ">
       <p className="text-gray-600  font-semibold text-center mb-8">
@@ -66,7 +64,16 @@ const StepTwo = ({ form }: StepTwoProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="0.02" {...field} />
+                  <Input
+                    placeholder="0.02"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -86,8 +93,11 @@ const StepTwo = ({ form }: StepTwoProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt:string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -101,7 +111,17 @@ const StepTwo = ({ form }: StepTwoProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    
+                    value={field.value ?? ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === '' ? '' : +value);
+                        }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -119,11 +139,44 @@ const StepTwo = ({ form }: StepTwoProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input id="display" placeholder="Decimal Pts" {...field} />
+                  <Input
+                    id="display"
+                    placeholder="Decimal Pts"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="secondaryMeteringDevice.displayResolution.maxCurrentOutput"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormControl>
+                  <Input
+                    placeholder="max current"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
+                </FormControl>
+                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="secondaryMeteringDevice.displayResolution.probabilityDistribution"
@@ -138,22 +191,37 @@ const StepTwo = ({ form }: StepTwoProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                     {distOptions.map((opt:string) => (
+                                             <SelectItem key={opt} value={opt}>
+                                               {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                                             </SelectItem>
+                                           ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
+          <div></div>
           <FormField
             control={form.control}
             name="secondaryMeteringDevice.displayResolution.sensitivityCoefficient"
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -182,11 +250,15 @@ const StepTwo = ({ form }: StepTwoProps) => {
                       <SelectValue placeholder="Prob. dist." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="uniform">Uniform</SelectItem>
+                      {distOptions.map((opt:string) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -196,8 +268,18 @@ const StepTwo = ({ form }: StepTwoProps) => {
             render={({ field }) => (
               <FormItem className="col-span-1">
                 <FormControl>
-                  <Input placeholder="sens. factor" {...field} />
+                  <Input
+                    placeholder="sens. factor"
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === '' ? '' : +value);
+                    }}
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -224,8 +306,18 @@ const StepTwo = ({ form }: StepTwoProps) => {
                 render={({ field }) => (
                   <FormItem className="col-span-1">
                     <FormControl>
-                      <Input placeholder="2000" {...field} />
+                      <Input
+                        placeholder="2000"
+                        {...field}
+                        type="number"
+                        value={field.value ?? ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === '' ? '' : +value);
+                        }}
+                      />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -242,8 +334,18 @@ const StepTwo = ({ form }: StepTwoProps) => {
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
-                        <Input placeholder="4.0" {...field} />
+                        <Input
+                          placeholder="4.0"
+                          {...field}
+                          type="number"
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value === '' ? '' : +value);
+                          }}
+                        />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -258,8 +360,18 @@ const StepTwo = ({ form }: StepTwoProps) => {
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
-                        <Input placeholder="20" {...field} />
+                        <Input
+                          placeholder="20"
+                          {...field}
+                          type="number"
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value === '' ? '' : +value);
+                          }}
+                        />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -277,8 +389,18 @@ const StepTwo = ({ form }: StepTwoProps) => {
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
-                        <Input placeholder="0.1" {...field} />
+                        <Input
+                          placeholder="0.1"
+                          {...field}
+                          type="number"
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value === '' ? '' : +value);
+                          }}
+                        />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -295,8 +417,15 @@ const StepTwo = ({ form }: StepTwoProps) => {
                           placeholder="0.015"
                           className="w-full"
                           {...field}
+                          type="number"
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value === '' ? '' : +value);
+                          }}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -305,6 +434,45 @@ const StepTwo = ({ form }: StepTwoProps) => {
           </div>
           <h2 className="text-xl font-semibold mt-3">Test Sample</h2>
           <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sample</TableHead>
+                <TableHead>Current (mA)</TableHead>
+                <TableHead>Flow (m³/hr)</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[0, 1, 2].map((index) => (
+                <TableRow key={index}>
+                  <TableCell>Sample {index + 1}</TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      step="any"
+                      {...form.register(
+                        `secondaryMeteringDevice.signalConversion.testSamples.${index}.0` as const,
+                        { valueAsNumber: true }
+                      )}
+                      placeholder="Enter current"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      step="any"
+                      {...form.register(
+                        `secondaryMeteringDevice.signalConversion.testSamples.${index}.1` as const,
+                        { valueAsNumber: true }
+                      )}
+                      placeholder="Enter flow"
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          {/* <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[150px]">Sample</TableHead>
@@ -341,7 +509,7 @@ const StepTwo = ({ form }: StepTwoProps) => {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </Table> */}
           <Button onClick={() => setOpen(false)} className="mt-5">
             Confirm
           </Button>

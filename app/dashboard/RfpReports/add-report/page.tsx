@@ -5,17 +5,20 @@ import { cookies } from 'next/headers';
 import { Suspense } from 'react';
 
 async function getAllFlowMeter(): Promise<any[]> {
-  // const cookieStore = await cookies();
-  // const token = cookieStore.get('token')?.value || '';
+  const cookieStore = await cookies();
+  const token = cookieStore.get('token')?.value || '';
   // const token = (await cookies()).get('token')?.value ?? '';
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/rfps`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      // Authorization: `Bearer ${token}`,
-    },
-    // credentials: 'include',
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/rfp/full`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: 'include',
+    }
+  );
   if (!response.ok) {
     console.error('RFP fetch failed:', response.status, response.statusText);
     throw new Error('Failed to fetch Rfp');
@@ -23,7 +26,7 @@ async function getAllFlowMeter(): Promise<any[]> {
 
   const flowData = await response.json();
 
-  return flowData?.data;
+  return flowData;
 }
 export default async function AddReportsPage() {
   const flowMeterData = await getAllFlowMeter();

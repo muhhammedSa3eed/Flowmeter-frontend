@@ -47,7 +47,7 @@ export const columns: ColumnDef<Report>[] = [
     accessorKey: 'coverageProbability',
     cell: ({ row }) => {
       const value = row.getValue('coverageProbability') as number | undefined;
-      return <div> {typeof value === 'number' ? value.toFixed(2) : '-'}</div>;
+      return <div > {typeof value === 'number' ? value.toFixed(2) : '-'}</div>;
     },
   },
   {
@@ -71,7 +71,7 @@ export const columns: ColumnDef<Report>[] = [
     accessorKey: 'creator',
     cell: ({ row }) => {
       const creator = row.getValue('creator') as any;
-      return <div>{creator ? creator.username : '-'}</div>;
+      return <div >{creator ? creator.username : '-'}</div>;
     },
   },
   {

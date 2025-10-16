@@ -107,7 +107,7 @@ export const columns: ColumnDef<TablePermission>[] = [
       ];
 
       return (
-        <div className="flex flex-wrap gap-1 py-1.5">
+        <div className="flex flex-wrap gap-1 md:gap-2 py-1.5 justify-center">
           {actions.map((action) => (
             <Badge
               key={action.label}
